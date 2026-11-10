@@ -101,8 +101,9 @@ def play_quiz(quizzes):
     print(f"\n결과: {len(quizzes)}문제 중 {score}문제 정답")
     return score, len(quizzes)
 
+
 # =====================================================
-# 퀴즈 목록 기능
+# 6단계: 퀴즈 목록 기능
 # =====================================================
 def list_quizzes(quizzes):
     if not quizzes:                           # 퀴즈가 없는 경우
@@ -113,8 +114,28 @@ def list_quizzes(quizzes):
     for number, quiz in enumerate(quizzes, start=1):   # 번호는 1부터
         print(f"{number}. {quiz.question}")            # 목록에서는 문제만 출력
     print(f"총 {len(quizzes)}개")
+
+
 # =====================================================
-# 6단계: 메뉴
+# 7단계: 점수 확인 기능
+# =====================================================
+def update_best_score(best_score, score):
+    # 아직 안 풀었거나(None), 이번 점수가 더 높으면 이번 점수로 갱신
+    if best_score is None or score > best_score:
+        return score
+    # 아니면 기존 최고 점수를 그대로 유지
+    return best_score
+
+
+def show_best_score(best_score):
+    if best_score is None:                    # 아직 퀴즈를 풀지 않은 경우
+        print("아직 퀴즈를 풀지 않았습니다.")
+    else:
+        print(f"최고 점수: {best_score}점")
+
+
+# =====================================================
+# 8단계: 메뉴
 # =====================================================
 def show_menu():
     print("========== 퀴즈 게임 ==========")
@@ -130,26 +151,30 @@ def get_menu_choice():
     # 메뉴 번호(1~5)를 입력받음. 검증 로직은 get_number_input 재사용
     return get_number_input("번호를 선택하세요: ", 1, 5)
 
+
 # =====================================================
-# 7단계: 프로그램 흐름
+# 9단계: 프로그램 흐름
 # =====================================================
 def main():
-    quizzes = get_default_quizzes()
+    quizzes = get_default_quizzes()           # 반복문 밖에서 한 번만 만든다
+    best_score = None                         # None = 아직 퀴즈를 풀지 않은 상태
     while True:
         show_menu()
         choice = get_menu_choice()
 
         if choice == 1:
-            play_quiz(quizzes)
+            score, total = play_quiz(quizzes)             # (맞힌 개수, 전체 개수)를 받음
+            if total > 0:                                 # 퀴즈가 없으면 갱신하지 않음
+                best_score = update_best_score(best_score, score)
         elif choice == 2:
             add_quiz(quizzes)
         elif choice == 3:
             list_quizzes(quizzes)
+        elif choice == 4:
+            show_best_score(best_score)
         elif choice == 5:
             print("프로그램을 종료합니다.")
             break
-        else:
-            print("준비 중입니다.")
 
 
 main()
