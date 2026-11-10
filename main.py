@@ -1,3 +1,6 @@
+# =====================================================
+# 1단계: Quiz 클래스 - 퀴즈 한 문제를 표현
+# =====================================================
 class Quiz:
     def __init__(self, question, choices, answer):
         self.question = question    # 문제 (str)
@@ -5,13 +8,19 @@ class Quiz:
         self.answer = answer        # 정답 번호 1~4 (int)
 
     def display(self):
+        # 문제와 선택지를 1~4 번호와 함께 출력
         print(self.question)
         for number, choice in enumerate(self.choices, start=1):
             print(f"{number}. {choice}")
 
     def is_correct(self, user_answer):
+        # 입력한 번호가 정답이면 True, 아니면 False
         return user_answer == self.answer
 
+
+# =====================================================
+# 2단계: 기본 퀴즈 데이터 (Git 기초 명령어 주제)
+# =====================================================
 def get_default_quizzes():
     return [
         Quiz("새 Git 저장소를 만드는 명령어는?", ["add", "commit", "init", "push"], 3),
@@ -21,29 +30,60 @@ def get_default_quizzes():
         Quiz("원격 저장소를 통째로 복제하는 명령어는?", ["checkout", "clone", "pull", "add"], 2),
     ]
 
-def get_number_input(prompt, min_value, max_value):
+
+# =====================================================
+# 3단계: 입력 도우미 함수 (재사용)
+# =====================================================
+def get_text_input(prompt):
+    # 문자열 입력: 공백 제거 후, 비어 있으면 다시 입력
     while True:
         text = input(prompt).strip()
-
         if text == "":
+            print("입력이 비어 있습니다. 다시 입력하세요.")
+            continue
+        return text
+
+
+def get_number_input(prompt, min_value, max_value):
+    # 숫자 입력: min_value~max_value 범위의 숫자를 받을 때까지 반복
+    while True:
+        text = input(prompt).strip()          # 1) 공백 제거
+
+        if text == "":                        # 2) 빈 입력
             print("입력이 비어 있습니다.")
             continue
 
-        try:
+        try:                                  # 3) 숫자 변환
             number = int(text)
         except ValueError:
             print("숫자만 입력할 수 있습니다.")
             continue
 
-        if number < min_value or number > max_value:
+        if number < min_value or number > max_value:   # 4) 범위 확인
             print(f"{min_value}~{max_value} 사이의 번호를 입력하세요.")
             continue
 
-        return number
-    # 공백 제거, 빈 입력, 숫자 변환 실패, 범위 밖을 처리하고 숫자를 return
+        return number                         # 5) 통과하면 반환
 
+
+# =====================================================
+# 4단계: 퀴즈 추가 기능
+# =====================================================
+def add_quiz(quizzes):
+    question = get_text_input("문제: ")
+    choices = []
+    for i in range(1, 5):                     # 선택지 4개 입력
+        choices.append(get_text_input(f"선택지 {i}: "))
+    answer = get_number_input("정답 번호 (1~4): ", 1, 4)
+    quizzes.append(Quiz(question, choices, answer))   # 리스트에 추가
+    print("퀴즈가 추가되었습니다.")
+
+
+# =====================================================
+# 5단계: 퀴즈 풀기 기능
+# =====================================================
 def play_quiz(quizzes):
-    if not quizzes:
+    if not quizzes:                           # 퀴즈가 없는 경우
         print("등록된 퀴즈가 없습니다.")
         return 0, 0
 
@@ -61,6 +101,10 @@ def play_quiz(quizzes):
     print(f"\n결과: {len(quizzes)}문제 중 {score}문제 정답")
     return score, len(quizzes)
 
+
+# =====================================================
+# 6단계: 메뉴
+# =====================================================
 def show_menu():
     print("========== 퀴즈 게임 ==========")
     print("1. 퀴즈 풀기")
@@ -70,38 +114,30 @@ def show_menu():
     print("5. 종료")
     print("================================")
 
+
 def get_menu_choice():
-    while True:
-        text = input("번호를 선택하세요: ").strip()
-        # 1) 빈 입력이면
-        if text =="":
-            print("입력이 비어있습니다. 1~5 사이의 숫자를 입력하세요.")
-            continue #안내 출력 후 continue
-        # 2) 숫자변환 
-        try:
-            choice = int(text)
-        except ValueError: 
-            print("숫자만 입력할 수 있습니다.")
-            continue #안내 출력 후 continue
-        # 3) 범위확인
-        if choice< 1 or choice > 5: #1~5 범위 밖이면 
-            print("1~5 사이의 번호를 선택하세요.") #안내 출력 후 
-            continue
+    # 메뉴 번호(1~5)를 입력받음. 검증 로직은 get_number_input 재사용
+    return get_number_input("번호를 선택하세요: ", 1, 5)
 
-        # 4) 통과하면 
-        return choice
 
+# =====================================================
+# 7단계: 프로그램 흐름
+# =====================================================
 def main():
+    quizzes = get_default_quizzes()           # 반복문 밖에서 한 번만 만든다 (핵심 변경)
     while True:
         show_menu()
         choice = get_menu_choice()
 
         if choice == 1:
-            play_quiz(get_default_quizzes())
+            play_quiz(quizzes)                # 이제 quizzes를 넘김
+        elif choice == 2:
+            add_quiz(quizzes)                 # 2번 메뉴 연결
         elif choice == 5:
             print("프로그램을 종료합니다.")
             break
         else:
-            print("준비 중입니다.")
+            print("준비 중입니다.")           # 3, 4번은 이후 단계에서 구현
 
-main()   # 정의가 다 끝난 맨 아래에서 호출
+
+main()
