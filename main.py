@@ -21,6 +21,45 @@ def get_default_quizzes():
         Quiz("원격 저장소를 통째로 복제하는 명령어는?", ["checkout", "clone", "pull", "add"], 2),
     ]
 
+def get_number_input(prompt, min_value, max_value):
+    while True:
+        text = input(prompt).strip()
+
+        if text == "":
+            print("입력이 비어 있습니다.")
+            continue
+
+        try:
+            number = int(text)
+        except ValueError:
+            print("숫자만 입력할 수 있습니다.")
+            continue
+
+        if number < min_value or number > max_value:
+            print(f"{min_value}~{max_value} 사이의 번호를 입력하세요.")
+            continue
+
+        return number
+    # 공백 제거, 빈 입력, 숫자 변환 실패, 범위 밖을 처리하고 숫자를 return
+
+def play_quiz(quizzes):
+    if not quizzes:
+        print("등록된 퀴즈가 없습니다.")
+        return 0, 0
+
+    score = 0
+    for quiz in quizzes:
+        print()
+        quiz.display()
+        answer = get_number_input("정답 번호 (1~4): ", 1, 4)
+        if quiz.is_correct(answer):
+            print("정답입니다!")
+            score += 1
+        else:
+            print(f"오답입니다. 정답은 {quiz.answer}번입니다.")
+
+    print(f"\n결과: {len(quizzes)}문제 중 {score}문제 정답")
+    return score, len(quizzes)
 
 def show_menu():
     print("========== 퀴즈 게임 ==========")
@@ -57,11 +96,12 @@ def main():
         show_menu()
         choice = get_menu_choice()
 
-        if choice == 5: # 5번이면 
-            print("프로그램을 종료합니다.")#종료 메시지 출력 후 
+        if choice == 1:
+            play_quiz(get_default_quizzes())
+        elif choice == 5:
+            print("프로그램을 종료합니다.")
             break
         else:
-            print("준비 중입니다.") # 나머지는 "준비 중입니다" 출력
-
+            print("준비 중입니다.")
 
 main()   # 정의가 다 끝난 맨 아래에서 호출
