@@ -76,7 +76,7 @@ def add_quiz(quizzes):
         choices.append(get_text_input(f"선택지 {i}: "))
     answer = get_number_input("정답 번호 (1~4): ", 1, 4)
     quizzes.append(Quiz(question, choices, answer))   # 리스트에 추가
-    print("퀴즈가 추가되었습니다.")
+    print(f"퀴즈가 추가되었습니다. (현재 {len(quizzes)}개)")
 
 
 # =====================================================
@@ -101,7 +101,18 @@ def play_quiz(quizzes):
     print(f"\n결과: {len(quizzes)}문제 중 {score}문제 정답")
     return score, len(quizzes)
 
+# =====================================================
+# 퀴즈 목록 기능
+# =====================================================
+def list_quizzes(quizzes):
+    if not quizzes:                           # 퀴즈가 없는 경우
+        print("등록된 퀴즈가 없습니다.")
+        return
 
+    print("\n===== 퀴즈 목록 =====")
+    for number, quiz in enumerate(quizzes, start=1):   # 번호는 1부터
+        print(f"{number}. {quiz.question}")            # 목록에서는 문제만 출력
+    print(f"총 {len(quizzes)}개")
 # =====================================================
 # 6단계: 메뉴
 # =====================================================
@@ -119,25 +130,26 @@ def get_menu_choice():
     # 메뉴 번호(1~5)를 입력받음. 검증 로직은 get_number_input 재사용
     return get_number_input("번호를 선택하세요: ", 1, 5)
 
-
 # =====================================================
 # 7단계: 프로그램 흐름
 # =====================================================
 def main():
-    quizzes = get_default_quizzes()           # 반복문 밖에서 한 번만 만든다 (핵심 변경)
+    quizzes = get_default_quizzes()
     while True:
         show_menu()
         choice = get_menu_choice()
 
         if choice == 1:
-            play_quiz(quizzes)                # 이제 quizzes를 넘김
+            play_quiz(quizzes)
         elif choice == 2:
-            add_quiz(quizzes)                 # 2번 메뉴 연결
+            add_quiz(quizzes)
+        elif choice == 3:
+            list_quizzes(quizzes)
         elif choice == 5:
             print("프로그램을 종료합니다.")
             break
         else:
-            print("준비 중입니다.")           # 3, 4번은 이후 단계에서 구현
+            print("준비 중입니다.")
 
 
 main()
