@@ -12,6 +12,16 @@ class Quiz:
     def is_correct(self, user_answer):
         return user_answer == self.answer
 
+def get_default_quizzes():
+    return [
+        Quiz("새 Git 저장소를 만드는 명령어는?", ["add", "commit", "init", "push"], 3),
+        Quiz("변경한 파일을 커밋 대상에 올리는 명령어는?", ["commit", "clone", "pull", "add"], 4),
+        Quiz("원격 변경사항을 가져와 합치는 명령어는?", ["commit", "clone", "pull", "add"], 3),
+        Quiz("브랜치를 바꾸는 명령어는?", ["checkout", "clone", "pull", "add"], 1),
+        Quiz("원격 저장소를 통째로 복제하는 명령어는?", ["checkout", "clone", "pull", "add"], 2),
+    ]
+
+
 def show_menu():
     print("========== 퀴즈 게임 ==========")
     print("1. 퀴즈 풀기")
@@ -20,6 +30,7 @@ def show_menu():
     print("4. 점수 확인")
     print("5. 종료")
     print("================================")
+
 def get_menu_choice():
     while True:
         text = input("번호를 선택하세요: ").strip()
@@ -51,5 +62,6 @@ def main():
             break
         else:
             print("준비 중입니다.") # 나머지는 "준비 중입니다" 출력
+
 
 main()   # 정의가 다 끝난 맨 아래에서 호출
