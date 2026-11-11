@@ -66,8 +66,10 @@ python3 main.py
 
 
 ### 보너스게임
-![보너스게임](docs/screenshots/bonus.png)
-
+![랜덤출제 ~ 문제수선택](docs/screenshots/bonus.png)
+![힌트 기능](docs/screenshots/hint.png)
+![퀴즈 삭제 기능](docs/screenshots/remove.png)
+![점수 기록 히스토리](docs/screenshots/history.png)
 
 ## 5. 파일 구조
 Python-GitBasic/
@@ -75,7 +77,7 @@ Python-GitBasic/
 ├── README.md
 ├── .gitignore
 ├── docs/
-│   └── screenshots/          # 실행 화면 스크린샷
+│   └── screenshots/        # 실행 화면 스크린샷
 │       ├── dev_env.png
 │       ├── add_quiz.png
 │       ├── quiz_list.png
