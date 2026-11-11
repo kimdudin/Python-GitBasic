@@ -1,3 +1,10 @@
+import json
+import os
+
+# state.json은 프로젝트 루트(이 파일과 같은 폴더)에 저장
+STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.json")
+
+
 # =====================================================
 # 1단계: Quiz 클래스 - 퀴즈 한 문제를 표현
 # =====================================================
@@ -16,6 +23,28 @@ class Quiz:
     def is_correct(self, user_answer):
         # 입력한 번호가 정답이면 True, 아니면 False
         return user_answer == self.answer
+
+    def to_dict(self):
+        # JSON으로 저장하기 위해 딕셔너리로 변환
+        return {
+            "question": self.question,
+            "choices": self.choices,
+            "answer": self.answer,
+        }
+
+    @staticmethod
+    def from_dict(data):
+        # 딕셔너리에서 Quiz 객체로 복원 (형식이 틀리면 예외 발생)
+        question = data["question"]
+        choices = data["choices"]
+        answer = data["answer"]
+        if not isinstance(question, str) or not question.strip():
+            raise ValueError("question 형식 오류")
+        if not isinstance(choices, list) or len(choices) != 4:
+            raise ValueError("choices 형식 오류")
+        if not isinstance(answer, int) or isinstance(answer, bool) or not 1 <= answer <= 4:
+            raise ValueError("answer 형식 오류")
+        return Quiz(question, choices, answer)
 
 
 # =====================================================
@@ -69,12 +98,52 @@ def get_number_input(prompt, min_value, max_value):
 # =====================================================
 # QuizGame 클래스 - 게임 전체를 관리
 #   - 속성: self.quizzes(퀴즈 목록), self.best_score(최고 점수)
-#   - 4~9단계의 기능이 모두 이 클래스의 메서드
 # =====================================================
 class QuizGame:
     def __init__(self):
-        self.quizzes = get_default_quizzes()  # 퀴즈 목록
-        self.best_score = None                # None = 아직 퀴즈를 풀지 않은 상태
+        self.quizzes = []
+        self.best_score = None
+        self.load_state()                     # 시작할 때 파일에서 불러오기
+
+    # =================================================
+    # 10단계: 파일 저장/불러오기 (state.json)
+    # =================================================
+    def save_state(self):
+        # 퀴즈 목록과 최고 점수를 JSON 파일에 저장
+        data = {
+            "quizzes": [quiz.to_dict() for quiz in self.quizzes],
+            "best_score": self.best_score,
+        }
+        try:
+            with open(STATE_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except OSError:
+            print("저장에 실패했습니다. 파일 권한이나 경로를 확인하세요.")
+
+    def load_state(self):
+        # 파일에서 불러오기. 없으면 기본값, 손상됐으면 안내 후 기본값으로 복구
+        if not os.path.exists(STATE_FILE):    # 첫 실행: 파일 없음
+            self.quizzes = get_default_quizzes()
+            self.best_score = None
+            return
+
+        try:
+            with open(STATE_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            quizzes = [Quiz.from_dict(item) for item in data["quizzes"]]
+            best_score = data["best_score"]
+            if best_score is not None and (
+                not isinstance(best_score, int) or isinstance(best_score, bool)
+            ):
+                raise ValueError("best_score 형식 오류")
+            self.quizzes = quizzes
+            self.best_score = best_score
+        except (OSError, ValueError, KeyError, TypeError):
+            # json.JSONDecodeError는 ValueError의 하위 클래스
+            print("데이터 파일이 손상되어 기본 퀴즈로 초기화합니다.")
+            self.quizzes = get_default_quizzes()
+            self.best_score = None
+            self.save_state()                 # 기본값으로 복구해 다시 저장
 
     # =================================================
     # 4단계: 퀴즈 추가 기능
@@ -86,6 +155,7 @@ class QuizGame:
             choices.append(get_text_input(f"선택지 {i}: "))
         answer = get_number_input("정답 번호 (1~4): ", 1, 4)
         self.quizzes.append(Quiz(question, choices, answer))   # 리스트에 추가
+        self.save_state()                     # 추가 즉시 저장
         print(f"퀴즈가 추가되었습니다. (현재 {len(self.quizzes)}개)")
 
     # =================================================
@@ -109,6 +179,7 @@ class QuizGame:
 
         print(f"\n결과: {len(self.quizzes)}문제 중 {score}문제 정답")
         self.update_best_score(score)         # 풀 때마다 최고 점수와 비교
+        self.save_state()                     # 갱신된 최고 점수 저장
 
     # =================================================
     # 6단계: 퀴즈 목록 기능
@@ -128,7 +199,6 @@ class QuizGame:
     # =================================================
     def update_best_score(self, score):
         # 처음 푼 경우(None)이거나 이번 점수가 더 높으면 갱신
-        # self.best_score를 직접 바꾸므로 return이 필요 없음
         if self.best_score is None or score > self.best_score:
             self.best_score = score
 
@@ -171,16 +241,22 @@ class QuizGame:
             elif choice == 4:
                 self.show_best_score()
             elif choice == 5:
+                self.save_state()             # 종료 전 저장
                 print("프로그램을 종료합니다.")
                 break
 
 
 # =====================================================
-# 프로그램 시작
+# 프로그램 시작 (Ctrl+C / EOF 안전 종료)
 # =====================================================
 def main():
-    game = QuizGame()   # 게임 객체 생성
-    game.run()          # 메뉴 반복 시작
+    game = QuizGame()
+    try:
+        game.run()
+    except (KeyboardInterrupt, EOFError):
+        # Ctrl+C 또는 입력 스트림 종료: 안내 후 저장하고 정상 종료
+        print("\n입력이 중단되었습니다. 저장 후 안전하게 종료합니다.")
+        game.save_state()
 
 
 main()
