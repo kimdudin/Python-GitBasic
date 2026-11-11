@@ -81,6 +81,8 @@ python3 main.py
 
 
 ## 5. 파일 구조
+
+```text
 Python-GitBasic/
 ├── main.py                 # 메인 실행 파일 (퀴즈 로직)
 ├── README.md               # 프로젝트 설명서
