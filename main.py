@@ -32,7 +32,7 @@ def get_default_quizzes():
 
 
 # =====================================================
-# 3단계: 입력 도우미 함수 (재사용)
+# 3단계: 입력 도우미 함수 (self가 필요 없어 클래스 밖에 둠)
 # =====================================================
 def get_text_input(prompt):
     # 문자열 입력: 공백 제거 후, 비어 있으면 다시 입력
@@ -67,114 +67,120 @@ def get_number_input(prompt, min_value, max_value):
 
 
 # =====================================================
-# 4단계: 퀴즈 추가 기능
+# QuizGame 클래스 - 게임 전체를 관리
+#   - 속성: self.quizzes(퀴즈 목록), self.best_score(최고 점수)
+#   - 4~9단계의 기능이 모두 이 클래스의 메서드
 # =====================================================
-def add_quiz(quizzes):
-    question = get_text_input("문제: ")
-    choices = []
-    for i in range(1, 5):                     # 선택지 4개 입력
-        choices.append(get_text_input(f"선택지 {i}: "))
-    answer = get_number_input("정답 번호 (1~4): ", 1, 4)
-    quizzes.append(Quiz(question, choices, answer))   # 리스트에 추가
-    print(f"퀴즈가 추가되었습니다. (현재 {len(quizzes)}개)")
+class QuizGame:
+    def __init__(self):
+        self.quizzes = get_default_quizzes()  # 퀴즈 목록
+        self.best_score = None                # None = 아직 퀴즈를 풀지 않은 상태
 
-
-# =====================================================
-# 5단계: 퀴즈 풀기 기능
-# =====================================================
-def play_quiz(quizzes):
-    if not quizzes:                           # 퀴즈가 없는 경우
-        print("등록된 퀴즈가 없습니다.")
-        return 0, 0
-
-    score = 0
-    for quiz in quizzes:
-        print()
-        quiz.display()
+    # =================================================
+    # 4단계: 퀴즈 추가 기능
+    # =================================================
+    def add_quiz(self):
+        question = get_text_input("문제: ")
+        choices = []
+        for i in range(1, 5):                 # 선택지 4개 입력
+            choices.append(get_text_input(f"선택지 {i}: "))
         answer = get_number_input("정답 번호 (1~4): ", 1, 4)
-        if quiz.is_correct(answer):
-            print("정답입니다!")
-            score += 1
+        self.quizzes.append(Quiz(question, choices, answer))   # 리스트에 추가
+        print(f"퀴즈가 추가되었습니다. (현재 {len(self.quizzes)}개)")
+
+    # =================================================
+    # 5단계: 퀴즈 풀기 기능
+    # =================================================
+    def play_quiz(self):
+        if not self.quizzes:                  # 퀴즈가 없는 경우
+            print("등록된 퀴즈가 없습니다.")
+            return
+
+        score = 0
+        for quiz in self.quizzes:
+            print()
+            quiz.display()
+            answer = get_number_input("정답 번호 (1~4): ", 1, 4)
+            if quiz.is_correct(answer):
+                print("정답입니다!")
+                score += 1
+            else:
+                print(f"오답입니다. 정답은 {quiz.answer}번입니다.")
+
+        print(f"\n결과: {len(self.quizzes)}문제 중 {score}문제 정답")
+        self.update_best_score(score)         # 풀 때마다 최고 점수와 비교
+
+    # =================================================
+    # 6단계: 퀴즈 목록 기능
+    # =================================================
+    def list_quizzes(self):
+        if not self.quizzes:                  # 퀴즈가 없는 경우
+            print("등록된 퀴즈가 없습니다.")
+            return
+
+        print("\n===== 퀴즈 목록 =====")
+        for number, quiz in enumerate(self.quizzes, start=1):   # 번호는 1부터
+            print(f"{number}. {quiz.question}")                 # 목록에서는 문제만 출력
+        print(f"총 {len(self.quizzes)}개")
+
+    # =================================================
+    # 7단계: 점수 확인 기능
+    # =================================================
+    def update_best_score(self, score):
+        # 처음 푼 경우(None)이거나 이번 점수가 더 높으면 갱신
+        # self.best_score를 직접 바꾸므로 return이 필요 없음
+        if self.best_score is None or score > self.best_score:
+            self.best_score = score
+
+    def show_best_score(self):
+        if self.best_score is None:           # 아직 퀴즈를 풀지 않은 경우
+            print("아직 퀴즈를 풀지 않았습니다.")
         else:
-            print(f"오답입니다. 정답은 {quiz.answer}번입니다.")
+            print(f"최고 점수: {self.best_score}점")
 
-    print(f"\n결과: {len(quizzes)}문제 중 {score}문제 정답")
-    return score, len(quizzes)
+    # =================================================
+    # 8단계: 메뉴
+    # =================================================
+    def show_menu(self):
+        print("========== 퀴즈 게임 ==========")
+        print("1. 퀴즈 풀기")
+        print("2. 퀴즈 추가")
+        print("3. 퀴즈 목록")
+        print("4. 점수 확인")
+        print("5. 종료")
+        print("================================")
 
+    def get_menu_choice(self):
+        # 메뉴 번호(1~5) 입력. 검증은 get_number_input 재사용
+        return get_number_input("번호를 선택하세요: ", 1, 5)
 
-# =====================================================
-# 6단계: 퀴즈 목록 기능
-# =====================================================
-def list_quizzes(quizzes):
-    if not quizzes:                           # 퀴즈가 없는 경우
-        print("등록된 퀴즈가 없습니다.")
-        return
+    # =================================================
+    # 9단계: 프로그램 흐름
+    # =================================================
+    def run(self):
+        while True:
+            self.show_menu()
+            choice = self.get_menu_choice()
 
-    print("\n===== 퀴즈 목록 =====")
-    for number, quiz in enumerate(quizzes, start=1):   # 번호는 1부터
-        print(f"{number}. {quiz.question}")            # 목록에서는 문제만 출력
-    print(f"총 {len(quizzes)}개")
-
-
-# =====================================================
-# 7단계: 점수 확인 기능
-# =====================================================
-def update_best_score(best_score, score):
-    # 아직 안 풀었거나(None), 이번 점수가 더 높으면 이번 점수로 갱신
-    if best_score is None or score > best_score:
-        return score
-    # 아니면 기존 최고 점수를 그대로 유지
-    return best_score
-
-
-def show_best_score(best_score):
-    if best_score is None:                    # 아직 퀴즈를 풀지 않은 경우
-        print("아직 퀴즈를 풀지 않았습니다.")
-    else:
-        print(f"최고 점수: {best_score}점")
-
-
-# =====================================================
-# 8단계: 메뉴
-# =====================================================
-def show_menu():
-    print("========== 퀴즈 게임 ==========")
-    print("1. 퀴즈 풀기")
-    print("2. 퀴즈 추가")
-    print("3. 퀴즈 목록")
-    print("4. 점수 확인")
-    print("5. 종료")
-    print("================================")
-
-
-def get_menu_choice():
-    # 메뉴 번호(1~5)를 입력받음. 검증 로직은 get_number_input 재사용
-    return get_number_input("번호를 선택하세요: ", 1, 5)
+            if choice == 1:
+                self.play_quiz()
+            elif choice == 2:
+                self.add_quiz()
+            elif choice == 3:
+                self.list_quizzes()
+            elif choice == 4:
+                self.show_best_score()
+            elif choice == 5:
+                print("프로그램을 종료합니다.")
+                break
 
 
 # =====================================================
-# 9단계: 프로그램 흐름
+# 프로그램 시작
 # =====================================================
 def main():
-    quizzes = get_default_quizzes()           # 반복문 밖에서 한 번만 만든다
-    best_score = None                         # None = 아직 퀴즈를 풀지 않은 상태
-    while True:
-        show_menu()
-        choice = get_menu_choice()
-
-        if choice == 1:
-            score, total = play_quiz(quizzes)             # (맞힌 개수, 전체 개수)를 받음
-            if total > 0:                                 # 퀴즈가 없으면 갱신하지 않음
-                best_score = update_best_score(best_score, score)
-        elif choice == 2:
-            add_quiz(quizzes)
-        elif choice == 3:
-            list_quizzes(quizzes)
-        elif choice == 4:
-            show_best_score(best_score)
-        elif choice == 5:
-            print("프로그램을 종료합니다.")
-            break
+    game = QuizGame()   # 게임 객체 생성
+    game.run()          # 메뉴 반복 시작
 
 
 main()
