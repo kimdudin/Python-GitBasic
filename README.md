@@ -65,6 +65,10 @@ python3 main.py
 ![git log](docs/screenshots/git_log.png)
 
 
+### 보너스게임
+![보너스게임](docs/screenshots/bonus.png)
+
+
 ## 5. 파일 구조
 Python-GitBasic/
 ├── main.py
