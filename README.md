@@ -66,28 +66,42 @@ python3 main.py
 
 
 ### 보너스게임
+
+#### 1. 랜덤 출제 및 문제 수 선택
 ![랜덤출제 ~ 문제수선택](docs/screenshots/bonus.png)
+
+#### 2. 힌트 기능
 ![힌트 기능](docs/screenshots/hint.png)
+
+#### 3. 퀴즈 삭제 기능
 ![퀴즈 삭제 기능](docs/screenshots/remove.png)
+
+#### 4. 점수 기록 히스토리
 ![점수 기록 히스토리](docs/screenshots/history.png)
+
 
 ## 5. 파일 구조
 Python-GitBasic/
-├── main.py
-├── README.md
-├── .gitignore
-├── docs/
-│   └── screenshots/        # 실행 화면 스크린샷
-│       ├── dev_env.png
-│       ├── add_quiz.png
-│       ├── quiz_list.png
-│       ├── play1.png
-│       ├── play2.png
-│       ├── score.png
-│       ├── quiz_after_restart.png
-│       ├── score_after_restart.png
-│       └── git_log.png
-└── state.json            # 실행 시 생성되는 데이터 파일 (Git 추적 제외)
+├── main.py                 # 메인 실행 파일 (퀴즈 로직)
+├── README.md               # 프로젝트 설명서
+├── .gitignore              # Git 추적 제외 설정
+├── state.json              # 퀴즈 데이터 및 점수 기록 저장 파일
+└── docs/
+    └── screenshots/        # 실행 화면 스크린샷 폴더
+        ├── dev_env.png     # 개발 환경 (VS Code)
+        ├── add_quiz.png    # 퀴즈 추가 화면
+        ├── quiz_list.png   # 퀴즈 목록 확인
+        ├── play1.png       # 퀴즈 풀이 화면 1
+        ├── play2.png       # 퀴즈 풀이 화면 2
+        ├── score.png       # 최종 점수 화면
+        ├── quiz_after_restart.png   # 재시작 후 퀴즈 유지 확인
+        ├── score_after_restart.png  # 재시작 후 점수 유지 확인
+        ├── git_log.png     # Git 커밋 히스토리
+        ├── bonus.png       # [보너스] 랜덤 출제 및 문제 수 선택
+        ├── hint.png        # [보너스] 힌트 보기 기능
+        ├── remove.png      # [보너스] 퀴즈 삭제 기능
+        └── history.png     # [보너스] 역대 점수 기록 확인     
+        # 실행 시 생성되는 데이터 파일 (Git 추적 제외)
 
 주요 클래스:
 - `Quiz`: 퀴즈 한 문제 (question, choices, answer), 출력/정답 확인/딕셔너리 변환
