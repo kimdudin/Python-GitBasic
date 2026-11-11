@@ -69,4 +69,4 @@ Python-GitBasic/
 ```
 
 - `quizzes`: 퀴즈 배열 (`answer`는 1~4, 선택지 번호)
-- `best_score`: 최고 정답 수 (아직 풀지 않았으면 `null`)
+- `best_score`: 최고 정답 수 (아직 풀지 않았으면 `null`)clone/pull 실습: 복제본에서 수정한 줄입니다.
