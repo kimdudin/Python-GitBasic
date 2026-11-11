@@ -34,15 +34,51 @@ python3 main.py
 - Ctrl+C, 입력 종료(EOF) 시 안내 메시지를 출력하고 저장 후 안전하게 종료
 - `state.json`이 없으면 기본 퀴즈 사용, 손상되면 안내 후 기본값으로 복구
 
-## 5. 파일 구조
 
-```
+
+## 실행 화면
+
+### 개발 환경
+![개발 환경](docs/screenshots/dev_env.png)
+
+### 퀴즈 추가
+![퀴즈 추가](docs/screenshots/add_quiz.png)
+
+### 퀴즈 목록
+![퀴즈 목록](docs/screenshots/quiz_list.png)
+
+### 퀴즈 풀기
+![퀴즈 풀기 1](docs/screenshots/play1.png)
+![퀴즈 풀기 2](docs/screenshots/play2.png)
+
+### 점수 확인
+![점수 확인](docs/screenshots/score.png)
+
+### 재실행 후 데이터 유지
+![재실행 후 퀴즈 유지](docs/screenshots/quiz_after_restart.png)
+![재실행 후 점수 유지](docs/screenshots/score_after_restart.png)
+
+### Git 이력
+![git log](docs/screenshots/git_log.png)
+
+
+## 5. 파일 구조
 Python-GitBasic/
-├── main.py        # Quiz, QuizGame 클래스와 프로그램 진입점
-├── README.md      # 프로젝트 설명
-├── .gitignore     # Git 추적 제외 목록
-└── state.json     # 실행 시 생성되는 데이터 파일 (Git 추적 제외)
-```
+├── main.py
+├── README.md
+├── .gitignore
+├── docs/
+│   └── screenshots/          # 실행 화면 스크린샷
+│       ├── dev_env.png
+│       ├── add_quiz.png
+│       ├── quiz_list.png
+│       ├── play1.png
+│       ├── play2.png
+│       ├── score.png
+│       ├── quiz_after_restart.png
+│       ├── score_after_restart.png
+│       └── git_log.png
+└── state.json            # 실행 시 생성되는 데이터 파일 (Git 추적 제외)
 
 주요 클래스:
 - `Quiz`: 퀴즈 한 문제 (question, choices, answer), 출력/정답 확인/딕셔너리 변환
